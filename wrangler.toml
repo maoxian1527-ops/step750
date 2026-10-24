@@ -1,0 +1,37 @@
+name = "jinbu"
+main = "worker/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+# 自定义域名（必须在任何表头之前；NS 生效后 deploy 即绑定）
+routes = [
+  { pattern = "step750.icu", custom_domain = true },
+  { pattern = "www.step750.icu", custom_domain = true },
+]
+
+# 静态站点（public 下的文件由 Workers Assets 直接返回）
+[assets]
+directory = "public"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+# D1 数据库（已创建并写入 database_id）
+[[d1_databases]]
+binding = "DB"
+database_name = "jinbu-db"
+database_id = "40075641-2474-44d7-9870-6784c7e2cdc5"
+migrations_dir = "migrations"
+
+[vars]
+MODEL_NAME = "deepseek-flash"
+SITE_NAME = "进步"
+SITE_DOMAIN = "step750.icu"
+# 邮箱验证码：仅注册时校验（确认真人 / 邮箱有效）；登录只用邮箱 + 密码
+REQUIRE_EMAIL_CODE = "1"
+# 人机验证（Cloudflare Turnstile）：填入 site key 后前端出现验证框；
+# 同时需要 wrangler secret put TURNSTILE_SECRET_KEY，服务端才会校验
+TURNSTILE_SITE_KEY = "0x4AAAAAAFjzXJIe2si_loZF"
+
+# Cloudflare Email Service 发信绑定（免费版不支持发信；保留以便升级后使用）
+[[send_email]]
+name = "EMAIL"

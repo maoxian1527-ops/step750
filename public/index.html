@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>进步 · Progress — 录取分数线与我的进退步</title>
+<meta name="description" content="按学校查 2021—2025 年录取分数线，记录每一次考试的进步与退步，让花枝猫陪你复盘。进步 Progress · step750.icu" />
+<meta name="theme-color" content="#fcfbf7" />
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/app.css" />
+</head>
+<body>
+
+<div class="backdrop" aria-hidden="true">
+  <div class="halo"></div>
+  <div class="rays"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <svg class="arch" viewBox="0 0 600 1300" fill="none" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="goldFade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#c19a55" stop-opacity=".45" />
+        <stop offset=".55" stop-color="#c19a55" stop-opacity=".22" />
+        <stop offset="1" stop-color="#c19a55" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+    <path d="M70 1300 V560 C70 340 165 235 300 96 C435 235 530 340 530 560 V1300" stroke="url(#goldFade)" stroke-width="1.4" />
+    <path d="M112 1300 V590 C112 380 190 285 300 152 C410 285 488 380 488 590 V1300" stroke="url(#goldFade)" stroke-width="1" />
+    <path d="M300 96 V1300" stroke="url(#goldFade)" stroke-width=".7" stroke-dasharray="2 10" />
+    <path d="M40 1300 V520 M560 1300 V520" stroke="url(#goldFade)" stroke-width=".9" />
+    <path d="M0 1180 H600 M0 1236 H600 M0 1292 H600" stroke="url(#goldFade)" stroke-width=".6" />
+  </svg>
+  <div class="motes" id="motes"></div>
+  <div class="grain"></div>
+</div>
+
+<header class="topbar">
+  <div class="shell topbar-in">
+    <a class="brand" href="#/">
+      <span class="sigil" aria-hidden="true"></span>
+      <span class="brand-text">进步<small>PROGRESS · ICU</small></span>
+    </a>
+    <nav class="nav" id="nav">
+      <a href="#/" data-nav="query">分数线</a>
+      <a href="#/exams" data-nav="exams">我的考试</a>
+      <a href="#/favorites" data-nav="favorites">收藏</a>
+    </nav>
+    <div class="account" id="account"></div>
+  </div>
+</header>
+
+<main id="view" class="shell" aria-live="polite"></main>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="mark"><i></i><span>✦</span><i></i></div>
+    <p>进步 · Progress · step750.icu</p>
+    <p class="dim">本站所有分数线均由算法生成，仅供演示，与官方录取数据无关；花枝猫人设由站长「maoxian1527」原创</p>
+    <p class="footer-links"><a href="#/algorithm">算法说明</a> · <a href="#/terms">用户协议</a> · <a href="#/privacy">隐私政策</a></p>
+    <button class="btn-quiet reward-link" id="rewardOpen" type="button">☕ 赞赏支持</button>
+  </div>
+</footer>
+
+<!-- 赞赏弹窗：点遮罩空白处 / × / Esc 关闭 -->
+<div class="modal-backdrop" id="rewardModal" hidden>
+  <div class="reward-card" role="dialog" aria-modal="true" aria-labelledby="rewardTitle">
+    <button class="reward-close" id="rewardClose" type="button" aria-label="关闭">×</button>
+    <p class="eyebrow" style="margin-bottom:6px">Thank You · 谢谢</p>
+    <h2 id="rewardTitle">感谢你使用「进步」</h2>
+    <p class="reward-text">
+      感谢你使用我制作的网站，制作它很不容易，这个网站我会让他努力存活更久的，可以支持一下我吗？<br />
+      小鲸鱼的 token 费用很贵，哪怕一块两块也好，感谢！
+    </p>
+    <img class="reward-qr" src="/img/reward.jpg" alt="站长的赞赏码" />
+    <p class="reward-note">微信扫码赞赏 · 一块两块都是心意</p>
+    <p class="reward-note">赞赏是自愿支持网站开发，与数据准确性、任何服务承诺无关</p>
+  </div>
+</div>
+
+<!-- 花枝猫：常驻悬浮入口 + 抽屉 -->
+<button class="cat-fab" id="catFab" aria-controls="catDrawer" aria-expanded="false">
+  <img src="/img/huazhimao-avatar.jpg" alt="" />
+  <span>花枝猫</span>
+</button>
+
+<aside class="cat-drawer" id="catDrawer" aria-hidden="true">
+  <header class="cat-head">
+    <img class="cat-avatar" src="/img/huazhimao-avatar.jpg" alt="" />
+    <div class="cat-who">
+      <b>花枝猫</b>
+      <span id="catStatus">在殿里打盹 · 醒了就陪你复盘</span>
+    </div>
+    <button class="cat-close" id="catClose" aria-label="收起">×</button>
+  </header>
+  <div class="cat-messages" id="catMessages"></div>
+  <div class="cat-suggests" id="catSuggests">
+    <button type="button">分析这次数学退步的原因</button>
+    <button type="button">我的分数能冲哪些学校？</button>
+    <button type="button">说一句能撑到高考的话</button>
+  </div>
+  <form class="cat-composer" id="catForm">
+    <input id="catInput" placeholder="把分数和心事说给花枝猫听…" autocomplete="off" aria-label="聊天输入" />
+    <button type="submit" aria-label="发送">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h13M12 5l7 7-7 7" /></svg>
+    </button>
+  </form>
+  <p class="cat-contact">
+    想单独用 QQ 版小猫 bot？<br />
+    <span class="cat-contact-note">站内花枝猫只在本页陪你复盘，不收费。QQ 版是基于 NekroAgent 单独搭建的付费 bot</span><br />
+    <button type="button" class="wx-copy" data-copy="3648457505" data-kind="qq" title="点击复制 QQ 号">QQ 3648457505</button>
+    <span class="cat-sep">·</span>
+    <button type="button" class="wx-copy" data-copy="maoxianACT" data-kind="wx" title="点击复制微信号">微信 maoxianACT</button>
+  </p>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>
