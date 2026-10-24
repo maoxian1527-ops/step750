@@ -136,7 +136,7 @@ function heroBlock() {
     <div class="crest"><span class="ring"></span><span class="ring"></span><span class="core"></span></div>
     <p class="eyebrow">Ad Astra · 以分数为阶</p>
     <h1>进步</h1>
-    <p class="lede">按学校查清 <em>2021—2025</em> 年的录取分数线，也把自己的每一次进退记下来。<br>分数是脚印，不是判决。</p>
+    <p class="lede">按学校查清 <em>2021—2025</em> 年的录取分数线，把自己的每一次成绩录进来，<br>让花枝猫（AI）帮你看进退、找原因。<br>分数是脚印，不是判决。</p>
     <p class="disclaimer">⚠ 本站所有分数线均由算法生成，<strong>是演示数据</strong>，与任何官方录取结果无关。网上信息真假混杂，本站也一样——请自己核对，别盲信。</p>
     <div class="stats">
       <div><b>${num(s.schools)}</b><span>所院校</span></div>
@@ -1524,6 +1524,71 @@ function rankForClient(score) {
   return Math.round(total * 0.5);
 }
 
+/* ---------------- 关于本站 ---------------- */
+function renderAbout() {
+  const view = $('#view');
+  const m = state.meta || {};
+  view.innerHTML = `<div class="crumbs"><a href="#/">圣殿</a><span>/</span><span>关于</span></div>
+    <section class="panel legal">
+      <h1>关于「进步」</h1>
+      <p class="dim" style="font-size:12px">一个给高中生用的小站：查院校、记成绩、让花枝猫帮你复盘。</p>
+
+      <div class="disclaimer" style="margin:14px 0">
+        分数是脚印，不是判决。
+      </div>
+
+      <h2>一、这里能做什么</h2>
+      <ul>
+        <li><strong>查院校分数</strong>：${num(m.stats?.schools)} 所院校 × ${m.provinces?.length || 31} 个省份 × 2021—2025 年 × 9 个单科</li>
+        <li><strong>记自己的成绩</strong>：每次考试的各科分数录进来，自动算总分与进退步</li>
+        <li><strong>让 AI 复盘</strong>：花枝猫会读你的成绩单，指出哪科在掉、下一步怎么补</li>
+        <li><strong>看走势</strong>：总分曲线 + 单科曲线，历史最高、净变化一目了然</li>
+        <li><strong>收藏院校</strong>：把想去的学校收进圣殿，报志愿时不用再翻</li>
+      </ul>
+
+      <h2>二、怎么用（三步）</h2>
+      <ol>
+        <li><strong>查分数</strong>：首页选「省份 / 单科 / 年份 / 文理」，列表按分数排序；点「详情」看该校五年走势和专业分</li>
+        <li><strong>记成绩</strong>：右上角「登录 / 注册」（邮箱 + 验证码）→「我的考试」→「录入新成绩」，填考试名、日期、各科分数</li>
+        <li><strong>问花枝猫</strong>：点右下角猫头，直接说「这次数学退步了，帮我看看」「608 分能冲哪些学校」，它会照着你的成绩单分析</li>
+      </ol>
+      <p class="dim" style="font-size:12px">花枝猫每人每天 25 条，够一次完整复盘用。</p>
+
+      <h2>三、分数口径</h2>
+      <ul>
+        <li><strong>总分</strong>：750 分制，按文理（理科 / 文科）区分</li>
+        <li><strong>单科</strong>：语文 / 数学 / 英语满分 150，其余六科满分 100；线差 = 单科分 − 及格线</li>
+        <li><strong>位次</strong>：按该省考生规模与分数段换算</li>
+        <li><strong>分数定位</strong>：查总分或查单科，都能选择看总分或看单科</li>
+      </ul>
+
+      <h2>四、用到的工具</h2>
+      <table class="data-table">
+        <thead><tr><th>工具</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td>Cloudflare Workers / D1 / Assets</td><td>站点运行时、数据库、静态托管</td></tr>
+          <tr><td>Cloudflare Turnstile</td><td>登录注册的人机验证</td></tr>
+          <tr><td>Resend</td><td>发送注册验证码邮件</td></tr>
+          <tr><td>DeepSeek</td><td>花枝猫的对话模型</td></tr>
+          <tr><td>原生 JS + 手写 SVG</td><td>前端与图表（无框架）</td></tr>
+          <tr><td>教育部高校名单</td><td>院校名称与所在地</td></tr>
+        </tbody>
+      </table>
+
+      <h2>五、数据说明（重要）</h2>
+      <p>本站展示的<strong>分数线、位次、省控线、专业分、单科分全部由算法生成</strong>，是演示数据，与任何官方录取结果无关。校名、所在地、办学层次来自公开的教育部高校名单。</p>
+      <p><strong>请勿把这里的数字用于真实志愿填报。</strong>真实数据请以各省教育考试院与学校招生网公布为准。想看生成公式和它的缺陷，可以翻 <a href="#/algorithm">算法说明</a>。</p>
+
+      <h2>六、联系站长</h2>
+      <p>问题、建议、bug 都可以找：<br>
+        QQ <b>3648457505</b> · 微信 <b>maoxianACT</b>（花枝猫抽屉底部可一键复制）</p>
+
+      <h2>七、赞赏</h2>
+      <p>站点接受自愿赞赏，用于支持开发与服务器开销，<strong>与数据准确性、任何服务承诺无关</strong>，也不影响你使用任何功能。</p>
+    </section>`;
+  window.scrollTo({ top: 0 });
+}
+
 /* ---------------- 路由 ---------------- */
 function parseHash() {
   const raw = location.hash.replace(/^#/, '') || '/';
@@ -1551,6 +1616,7 @@ async function route() {
   if (parts[0] === 'terms') { setNav(''); renderLegal('terms'); return; }
   if (parts[0] === 'privacy') { setNav(''); renderLegal('privacy'); return; }
   if (parts[0] === 'algorithm') { setNav(''); renderAlgo(); return; }
+  if (parts[0] === 'about') { setNav(''); renderAbout(); return; }
   setNav('query');
   await renderHome();
 }
