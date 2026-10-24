@@ -24,3 +24,6 @@ Thumbs.db
 
 # 第三方院校名单原始文件（聚合结果 schools.mjs 已保留）
 data/universities-raw.json
+
+# 本地打包产物
+_dist/
