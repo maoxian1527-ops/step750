@@ -503,7 +503,8 @@ async function chatReply(env, user, body) {
   const subject = String(body.subject || "数学");
   const track = String(body.track || "理科");
   const history = await chatHistory(env, user.id, 12);
-  await env.DB.prepare("INSERT INTO chat_messages (user_id, role, content) VALUES (?, ?, ?)").bind(user.id, "user", message).run();
+  // 写入失败（例如 D1 当日写入额度用尽）不应该影响回话，只是这次不留记录
+  await env.DB.prepare("INSERT INTO chat_messages (user_id, role, content) VALUES (?, ?, ?)").bind(user.id, "user", message).run().catch(() => {});
   const summary = await examSummary(env, user);
   const favorites = await env.DB.prepare(
     "SELECT s.name FROM favorites f JOIN schools s ON s.id = f.school_id WHERE f.user_id = ? LIMIT 5"
@@ -524,7 +525,7 @@ async function chatReply(env, user, body) {
   if (!reply) {
     reply = await localReply(env, { message, summary, province, subject, favorites: favorites.results.map((f) => f.name) });
   }
-  await env.DB.prepare("INSERT INTO chat_messages (user_id, role, content) VALUES (?, ?, ?)").bind(user.id, "assistant", reply).run();
+  await env.DB.prepare("INSERT INTO chat_messages (user_id, role, content) VALUES (?, ?, ?)").bind(user.id, "assistant", reply).run().catch(() => {});
   return json({ reply, source, limit: DAILY_CHAT_LIMIT, used: used + 1, remaining: Math.max(0, DAILY_CHAT_LIMIT - used - 1) });
 }
 __name(chatReply, "chatReply");
@@ -914,7 +915,14 @@ async function guardHuman(env, request, body) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (url.pathname.startsWith('/api/')) return handleApi(request, env, url);
+    if (url.pathname.startsWith('/api/')) {
+      try {
+        return await handleApi(request, env, url);
+      } catch (e) {
+        console.error('api error', e && e.stack || e);
+        return json({ error: '服务器开小差了，稍后再试喵' }, 500);
+      }
+    }
     return env.ASSETS.fetch(request);
   },
 };
