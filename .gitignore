@@ -21,3 +21,6 @@ data/*.log
 # 系统文件
 .DS_Store
 Thumbs.db
+
+# 第三方院校名单原始文件（聚合结果 schools.mjs 已保留）
+data/universities-raw.json
