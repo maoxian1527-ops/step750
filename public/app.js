@@ -1579,11 +1579,11 @@ function renderAbout() {
       <p>本站展示的<strong>分数线、位次、省控线、专业分、单科分全部由算法生成</strong>，是演示数据，与任何官方录取结果无关。校名、所在地、办学层次来自公开的教育部高校名单。</p>
       <p><strong>请勿把这里的数字用于真实志愿填报。</strong>真实数据请以各省教育考试院与学校招生网公布为准。想看生成公式和它的缺陷，可以翻 <a href="#/algorithm">算法说明</a>。</p>
 
-      <h2>六、共创</h2>
-      <p>这个站不是一个人做出来的：</p>
+      <h2>六、贡献者</h2>
+      <p>为这个站出过力的人：</p>
       <ul>
         <li><strong>maoxian1527</strong> — 站长：站点设计、前后端、花枝猫人设</li>
-        <li><strong><a href="https://github.com/dimang01" target="_blank" rel="noopener noreferrer">dimang01</a></strong> — 共创：AI 陪伴框架 <a href="https://github.com/dimang01/xiyu-ai" target="_blank" rel="noopener noreferrer">xiyu-ai</a> 作者</li>
+        <li><strong><a href="https://github.com/dimang01" target="_blank" rel="noopener noreferrer">dimang01</a></strong> — 贡献者：AI 陪伴框架 <a href="https://github.com/dimang01/xiyu-ai" target="_blank" rel="noopener noreferrer">xiyu-ai</a> 作者</li>
       </ul>
       <p class="dim" style="font-size:12px">想一起做点什么——提建议、报 bug、帮忙试玩、纠错——都欢迎，下面有联系方式。</p>
 
