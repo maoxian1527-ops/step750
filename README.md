@@ -4,7 +4,7 @@
 
 **线上地址：https://step750.icu**
 
-![首页](docs/screenshot-home.png)
+![首页](docs/ui-home.png)
 
 ---
 
@@ -32,11 +32,11 @@
 - 层次筛选：985 / 211 / 双一流 / 省重点 / 普通
 - 每个院校都有：历年总分走势、单科折算分、位次、省控线、线差、专业分数
 
-![学校参考](docs/screenshot-reference.png)
+![学校参考](docs/ui-reference.png)
 
 ### 我的考试
 
-![考试记录](docs/screenshot-records.png)
+![考试记录](docs/ui-records.png)
 
 - 录入考试名称、日期、各科分数（满分自动匹配）
 - 自动算：总分、较上次进退、历史最高、净变化、各科进退
@@ -176,7 +176,7 @@ migrations/              D1 表结构
 
 | 登录 / 注册 | 关于 · 合规说明 |
 |---|---|
-| ![登录页](docs/screenshot-login.png) | ![关于](docs/screenshot-about.png) |
+| ![登录页](docs/ui-login.png) | ![关于](docs/ui-about.png) |
 
 站内页脚还有「关于 / 算法说明 / 用户协议 / 隐私政策 / 赞赏」五个弹窗，内容与上面一致。
 
