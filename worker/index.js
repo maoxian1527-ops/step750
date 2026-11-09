@@ -926,6 +926,16 @@ export default {
     if (url.pathname === '/account') {
       return env.ASSETS.fetch(new Request(new URL('/account.html', url).toString(), request));
     }
+    // PWA：保证 manifest / service worker 的类型正确，SW 作用域为整站
+    if (url.pathname === '/sw.js' || url.pathname === '/manifest.webmanifest') {
+      const res = await env.ASSETS.fetch(request);
+      const headers = new Headers(res.headers);
+      const isSw = url.pathname === '/sw.js';
+      headers.set('content-type', isSw ? 'text/javascript; charset=utf-8' : 'application/manifest+json; charset=utf-8');
+      headers.set('cache-control', 'public, max-age=0, must-revalidate');
+      if (isSw) headers.set('service-worker-allowed', '/');
+      return new Response(res.body, { status: res.status, headers });
+    }
     return env.ASSETS.fetch(request);
   },
 };

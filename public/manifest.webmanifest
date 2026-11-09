@@ -1,0 +1,23 @@
+{
+  "name": "进步 · 成绩本",
+  "short_name": "进步",
+  "description": "记录每一次考试成绩，看总分与单科的进退；查 2,740 所院校的演示分数线。",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#f6f5f0",
+  "theme_color": "#3d6553",
+  "lang": "zh-CN",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "/img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "记录一次考试", "short_name": "记成绩", "url": "/?action=new-exam" },
+    { "name": "学校参考", "short_name": "查学校", "url": "/#reference" }
+  ]
+}

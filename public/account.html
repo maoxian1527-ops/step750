@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>登录 · 进步</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/img/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><title>登录 · 进步</title>
 <meta name="theme-color" content="#f6f5f0" />
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml" />
 <style>
@@ -195,5 +195,6 @@ input:focus-visible{outline:3px solid #b59b65;outline-offset:2px}
   boot();
 })();
 </script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function(){}); }); }</script>
 </body>
 </html>
