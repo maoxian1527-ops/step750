@@ -923,6 +923,9 @@ export default {
         return json({ error: '服务器开小差了，稍后再试喵' }, 500);
       }
     }
+    if (url.pathname === '/account') {
+      return env.ASSETS.fetch(new Request(new URL('/account.html', url).toString(), request));
+    }
     return env.ASSETS.fetch(request);
   },
 };

@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>登录 · 进步</title>
+<meta name="theme-color" content="#f6f5f0" />
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml" />
+<style>
+:root{--paper:#f6f5f0;--white:#fffefa;--ink:#293b35;--muted:#7c827a;--line:#e1e3d9;--green:#3d6553;--light:#eaf0e8;--gold:#a87b3c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;display:grid;place-items:center;padding:28px 18px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;color:inherit}
+a{color:var(--green)}
+.card{width:min(420px,100%);background:var(--white);border:1px solid var(--line);border-radius:10px;padding:30px 28px 24px;box-shadow:0 20px 50px -40px rgba(41,59,53,.5)}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+.brand .mark{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--gold);font-size:15px}
+.brand strong{display:block;font-size:16px;letter-spacing:.16em}
+.brand small{display:block;font-size:10.5px;letter-spacing:.22em;color:var(--muted)}
+h1{font-size:20px;font-weight:500;margin:0 0 6px;letter-spacing:.04em}
+.sub{color:var(--muted);font-size:12.5px;margin:0 0 20px}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.tabs button{flex:1;border:0;background:transparent;padding:10px 0;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--green);font-weight:600}
+.field{margin-bottom:14px}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;letter-spacing:.04em}
+input{width:100%;background:#fff;border:1px solid #d7dccf;border-radius:5px;padding:10px 11px;color:var(--ink)}
+input:focus-visible{outline:3px solid #b59b65;outline-offset:2px}
+.code-row{display:flex;gap:8px}
+.code-row input{flex:1}
+.link{background:none;border:0;color:var(--green);font-size:12.5px;padding:0;text-decoration:underline;text-underline-offset:3px}
+.btn{width:100%;border:1px solid var(--green);background:var(--green);color:#fff;border-radius:5px;padding:11px 16px;font-size:14px;margin-top:8px}
+.btn:hover{background:#304f40}
+.btn:disabled{opacity:.6;cursor:default}
+.warning{color:#a15846;font-size:12.5px;min-height:18px;margin:10px 0 0}
+.hint{color:var(--muted);font-size:11.5px;line-height:1.8;margin:16px 0 0}
+.challenge{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--light);border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin-bottom:10px}
+.challenge .q{font-size:15px;letter-spacing:.06em}
+.challenge input{width:96px}
+.turnstile-slot{margin-bottom:10px;min-height:0}
+.turnstile-slot[hidden]{display:none}
+.back{display:block;text-align:center;margin-top:16px;font-size:12.5px}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="brand"><span class="mark">↗</span><div><strong>进步</strong><small>我的成绩本</small></div></div>
+  <h1 id="title">欢迎回来</h1>
+  <p class="sub" id="subtitle">用你自己的邮箱登录，成绩会保存到云端。</p>
+
+  <div class="tabs" role="tablist">
+    <button type="button" data-mode="login" role="tab" aria-selected="true">登录</button>
+    <button type="button" data-mode="register" role="tab" aria-selected="false">注册</button>
+  </div>
+
+  <form id="form" novalidate>
+    <div class="field"><label for="email">邮箱</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com" required></div>
+    <div class="field"><label for="password">密码</label><input id="password" type="password" autocomplete="current-password" placeholder="至少 8 位" required></div>
+    <div class="field" id="codeField" hidden>
+      <label for="code">邮箱验证码</label>
+      <div class="code-row">
+        <input id="code" inputmode="numeric" maxlength="6" placeholder="6 位数字" autocomplete="one-time-code" />
+        <button type="button" class="link" id="sendCode" style="white-space:nowrap">获取验证码</button>
+      </div>
+    </div>
+    <div class="turnstile-slot" id="tsSlot" hidden></div>
+    <div id="challengeBox" hidden></div>
+    <p class="warning" id="msg" role="alert"></p>
+    <button type="submit" class="btn" id="submit">登录</button>
+  </form>
+
+  <p class="hint" id="hint">密码用 PBKDF2 加盐哈希保存，服务器不存明文。这是演示站点，请勿使用你在别处的重要密码。</p>
+  <a class="back" href="/">← 回到成绩本</a>
+</main>
+
+<script>
+(function(){
+  const $ = (s) => document.querySelector(s);
+  const state = { mode:'login', meta:null, captcha:'challenge', tsToken:'', challenge:null, tsOn:false };
+
+  const msg = (t) => { $('#msg').textContent = t || ''; };
+
+  async function api(path, opt){
+    const res = await fetch(path, { credentials:'same-origin', ...opt, headers:{ ...(opt && opt.body ? {'content-type':'application/json'} : {}), ...(opt && opt.headers) } });
+    let data = {}; try { data = await res.json(); } catch {}
+    if (!res.ok) { const e = new Error(data.error || ('请求失败（' + res.status + '）')); e.status = res.status; throw e; }
+    return data;
+  }
+
+  function syncMode(){
+    const reg = state.mode === 'register';
+    $('#title').textContent = reg ? '创建账号' : '欢迎回来';
+    $('#subtitle').textContent = reg ? '注册后成绩会保存到云端，换设备也能看。' : '用你自己的邮箱登录，成绩会保存到云端。';
+    $('#submit').textContent = reg ? '注册并进入' : '登录';
+    document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.mode === state.mode)));
+    const needCode = reg && state.meta && state.meta.emailCode;
+    $('#codeField').hidden = !needCode;
+    $('#hint').innerHTML = reg
+      ? (needCode ? '注册需要邮箱验证码，10 分钟内有效。<br>密码用 PBKDF2 加盐哈希保存，服务器不存明文。' : '可直接注册。<br>密码用 PBKDF2 加盐哈希保存，服务器不存明文。')
+      : '密码用 PBKDF2 加盐哈希保存，服务器不存明文。<br>这是演示站点，请勿使用你在别处的重要密码。';
+    msg('');
+  }
+
+  /* ---------- 人机验证：Turnstile 优先，失败可切算式 ---------- */
+  function loadChallenge(){
+    const box = $('#challengeBox');
+    box.hidden = false;
+    box.innerHTML = '<div class="challenge"><span class="q" id="cq">出题中…</span><input id="ca" inputmode="numeric" placeholder="答案" autocomplete="off" /><button type="button" class="link" id="refresh">换一题</button></div>';
+    $('#refresh').onclick = loadChallenge;
+    api('/api/auth/challenge').then((d) => { state.challenge = d; $('#cq').textContent = d.question; })
+      .catch(() => { $('#cq').textContent = '验证题加载失败'; });
+  }
+
+  function mountTurnstile(){
+    const slot = $('#tsSlot');
+    slot.hidden = false;
+    const render = () => {
+      window.turnstile.render(slot, {
+        sitekey: state.meta.turnstile.siteKey,
+        theme: 'light',
+        language: 'zh-cn',
+        callback: (t) => { state.tsToken = t; },
+        'expired-callback': () => { state.tsToken = ''; },
+        'error-callback': () => { state.tsToken = ''; }
+      });
+    };
+    if (window.turnstile) { render(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    s.async = true; s.defer = true;
+    s.onload = render;
+    document.head.appendChild(s);
+    const fb = document.createElement('button');
+    fb.type = 'button'; fb.className = 'link'; fb.textContent = '验证框加载不出来？改用算式验证';
+    fb.style.cssText = 'display:block;margin:6px 0 10px;font-size:11.5px';
+    fb.onclick = () => { state.captcha = 'challenge'; state.tsOn = false; slot.hidden = true; slot.innerHTML = ''; fb.remove(); loadChallenge(); };
+    slot.after(fb);
+  }
+
+  function captchaPayload(){
+    if (state.captcha === 'turnstile' && state.tsOn) return { turnstileToken: state.tsToken };
+    return { challengeToken: (state.challenge && state.challenge.token) || '', challengeAnswer: ($('#ca') && $('#ca').value.trim()) || '' };
+  }
+
+  async function boot(){
+    try {
+      state.meta = await api('/api/meta');
+    } catch { state.meta = { emailCode:false }; }
+    const ts = state.meta.turnstile || {};
+    if (ts.enabled && ts.siteKey) { state.captcha = 'turnstile'; state.tsOn = true; mountTurnstile(); }
+    else loadChallenge();
+    syncMode();
+  }
+
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => { state.mode = b.dataset.mode; syncMode(); }));
+
+  let timer = null;
+  $('#sendCode').addEventListener('click', async () => {
+    const email = $('#email').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg('先填一个正确的邮箱'); return; }
+    const btn = $('#sendCode');
+    btn.disabled = true;
+    try {
+      await api('/api/auth/send-code', { method:'POST', body: JSON.stringify({ email, ...captchaPayload() }) });
+      msg('验证码已发送，去邮箱看看');
+      let left = 60; btn.textContent = left + 's 后重发';
+      timer = setInterval(() => {
+        left -= 1;
+        if (left <= 0) { clearInterval(timer); btn.disabled = false; btn.textContent = '获取验证码'; return; }
+        btn.textContent = left + 's 后重发';
+      }, 1000);
+    } catch (e) { btn.disabled = false; msg(e.message); }
+  });
+
+  $('#form').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const email = $('#email').value.trim();
+    const password = $('#password').value;
+    if (!email || !password) { msg('邮箱和密码都要填'); return; }
+    const payload = { email, password, ...captchaPayload() };
+    if (state.mode === 'register' && state.meta && state.meta.emailCode) payload.code = $('#code').value.trim();
+    const btn = $('#submit');
+    btn.disabled = true; msg('正在处理…');
+    try {
+      await api('/api/auth/' + state.mode, { method:'POST', body: JSON.stringify(payload) });
+      const target = location.hash && location.hash.includes('/') ? '/' : '/';
+      location.href = target;
+    } catch (e) {
+      msg(e.message);
+      btn.disabled = false;
+    }
+  });
+
+  boot();
+})();
+</script>
+</body>
+</html>
